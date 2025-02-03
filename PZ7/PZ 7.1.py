@@ -6,3 +6,4 @@ string_example = "Привет, мир!"
 reversed_string = reverse_string(string_example)
 print(f"Исходная строка: {string_example}")
 print(f"Перевернутая строка: {reversed_string}")
+

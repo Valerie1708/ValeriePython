@@ -2,27 +2,13 @@
 # последнего каталога (без символов «\»). Если файл содержится в корневом каталоге,
 # то вывести символ «\ ».
 import os
-def последняя_папка(путь):
-  """Возвращает имя последней папки из пути файла.
-     Если файл в корне, возвращает '\\'."""
-  папка = os.path.dirname(путь)
-  if not папка:
-    return '\\'
-  else:
-    return os.path.basename(папка)
-
-# Примеры использования
-путь1 = r"C:\Users\User\Documents\file.txt"
-путь2 = r"D:\another_file.txt"
-путь3 = r"/home/user/folder/report.pdf"
-путь4 = r"/file.txt"
-путь5 = r"C:\\"
-путь6 = r"/"
-
-print(f"Путь: {путь1}, Последняя папка: {последняя_папка(путь1)}")
-print(f"Путь: {путь2}, Последняя папка: {последняя_папка(путь2)}")
-print(f"Путь: {путь3}, Последняя папка: {последняя_папка(путь3)}")
-print(f"Путь: {путь4}, Последняя папка: {последняя_папка(путь4)}")
-print(f"Путь: {путь5}, Последняя папка: {последняя_папка(путь5)}")
-print(f"Путь: {путь6}, Последняя папка: {последняя_папка(путь6)}")
-
+def get_last_directory(file_path):
+  try:
+    directory = os.path.dirname(file_path)
+    if not directory:
+      return "\\"
+    else:
+        last_directory = os.path.basename(directory)
+        return last_directory
+  except:
+    return None

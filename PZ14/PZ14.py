@@ -1,17 +1,27 @@
-# . В исходном текстовом файле(hotline1.txt) найти всеномера телефонов,
-# соответствующих шаблону 8(000)000-00-00. Посчитать количество полученных
-# элементов. После фразы «Горячая линия» добавить фразу «Министерства
-# образования Ростовской области», выполнив манипуляции в новом файле.
+# В исходном текстовом файле(Dostoevsky.txt) найти все варианты фамилии
+#Достоевского (т.е. с различными окончаниями, например, Достоевский,
+#Достоевского) в единственном экземпляре.
 import re
+def find_dostoevsky_variants(filename="Dostoevsky.txt"):
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            text = file.read()
+        pattern = r"[Дд]остоевск(?:ий|ого|ому|им|ом|ая|ое|ие|их|ам|а|у)"
+        matches = re.findall(pattern, text)
+        return set(matches)
 
-with open('hotline2.txt', 'r', encoding='utf-8') as file:
-    text = file.read()
+    except FileNotFoundError:
+        print(f"Ошибка: Файл '{filename}' не найден.")
+        return set()
+    except Exception as e:
+        print(f"Ошибка при обработке файла: {e}")
+        return set()
+if __name__ == '__main__':
+    variants = find_dostoevsky_variants()
 
-phone_numbers = re.findall(r'8\(\d{3}\)\d{3}-\d{2}-\d{2}', text)
-count = len(phone_numbers)
-print(f'Найдено номеров: {count}')
-
-new_text = text.replace('Горячая линия', 'Горячая линия Министерства образования Ростовской области')
-
-with open('hotline2.txt', 'w', encoding='utf-8') as new_file:
-    new_file.write(new_text)
+    if variants:
+        print("Найденные варианты фамилии Достоевского:")
+        for variant in variants:
+            print(variant)
+    else:
+        print("Варианты фамилии Достоевского не найдены.")

@@ -1,49 +1,102 @@
-#Программа должна обеспечивать функционал по вводу данных в БД (10 позиций), их
-#поиску(SELECT), удалению(DELETE) и редактированию(UPDATE). При организации поиска, удаления и
-#редактирования использовать WHERE, предусмотреть по три SQL-запроса для каждой
-#операции
-#
-
-# Приложение НОТАРИАЛЬНАЯ КОНТОРА для некоторой организации. БД
-# должна содержать таблицу Нотариальные услуги со следующей структурой записи: ФИО
-# клиента, услуга, сумма сделки, комиссионные (доход конторы).
-
+#Приложение УЧЕБНЫЙ ПЛАН для автоматизированного контроля учебной
+#нагрузки по кафедре. Таблица Дисциплины должна иметь следующую структуру записи:
+#Код дисциплины, Наименование дисциплины, Специальность, Лекции (колич.часов),
+#Практические (колич.часов), Лабораторные (колич.часов), Форма отчетности.
+#создай код
 import sqlite3 as sq
-with sq.connect('notary_services.db') as con:
-    cur = con.cursor()
-    cur.execute('DROP TABLE IF EXISTS services')
-    cur.execute("""CREATE TABLE IF NOT EXISTS services
-                (surname_klient varchar(20) not null,
-                name_klient varchar(20) not null,
-                lastname_klient varchar(20) not null,
-                notary_type varchar(30) not null,
-                sum_of_transaction decimal(10,2) not null,
-                dohod decimal(10,2) not null)""")
-    information = [
-        ("Иванов", "Петр", "Сергеевич", "Договор купли-продажи квартиры", 3200, 1100),
-        ("Смирнова", "Анна", "Владимировна", "Доверенность на имущество", 2500, 800),
-        ("Козлов", "Максим", "Алексеевич", "Дарение автомобиля", 3800, 1400),
-        ("Петрова", "Елена", "Николаевна", "Свидетельство о наследстве", 3000, 1000),
-        ("Волков", "Дмитрий", "Игоревич", "Брачный договор", 2800, 900),
-        ("Морозова", "Ольга", "Викторовна", "Продажа дачного участка", 3500, 1200),
-        ("Лебедев", "Артем", "Романович", "Доверенность на представительство", 2200, 700),
-        ("Новикова", "Татьяна", "Степановна", "Оформление завещания", 2600, 850),
-        ("Соколов", "Игорь", "Викторович", "Договор займа", 3100, 1050),
-        ("Федорова", "Мария", "Олеговна", "Продажа коммерческой недвижимости", 3400, 1300)
-    ]
-    cur.executemany("INSERT INTO services VALUES (?, ?, ?, ?, ?, ?)", information)
 
-    #cur.execute("SELECT * FROM services WHERE surname_klient = ?", ("Морозова",))
-    #print(cur.fetchall())
-    #cur.execute("SELECT * FROM services WHERE notary_type = ?", ("Договор купли-продажи квартиры",))
-    #print(cur.fetchall())
-    #cur.execute("SELECT surname_klient,notary_type,sum_of_transaction,dohod FROM services WHERE dohod > ?",(1000,))
-    #print(cur.fetchall())
+def create_database(db_name="educational_plan.db"):
+    try:
+        with sq.connect(db_name) as con:
+            cur = con.cursor()
+            cur.execute('''
+                CREATE TABLE IF NOT EXISTS Дисциплины (
+                    Код_дисциплины INTEGER PRIMARY KEY,
+                    Наименование_дисциплины TEXT NOT NULL,
+                    Специальность TEXT NOT NULL,
+                    Лекции INTEGER NOT NULL,
+                    Практические INTEGER NOT NULL,
+                    Лабораторные INTEGER NOT NULL,
+                    Форма_отчетности TEXT NOT NULL
+                )
+            ''')
+            print(f"База данных '{db_name}' и таблица 'Дисциплины' успешно созданы.")
+    except sq.Error as e:
+        print(f"Ошибка при создании базы данных: {e}")
+def add_discipline(db_name="educational_plan.db",
+                   code: int = None,
+                   name: str = None,
+                   speciality: str = None,
+                   lectures: int = None,
+                   practical: int = None,
+                   lab: int = None,
+                   report_form: str = None):
+    try:
+        with sq.connect(db_name) as con:
+            cur = con.cursor()
+            if not all([code, name, speciality, lectures, practical, lab, report_form]):
+                print("Ошибка: Не все обязательные поля заполнены.")
+                return
 
-    #cur.execute("DELETE FROM services WHERE surname_klient = ?", ("Петрова",))
-    #cur.execute("DELETE FROM services WHERE sum_of_transaction < ?", (2600,))
-    #cur.execute("DELETE FROM services WHERE dohod > ?", (1000,))
+            sql = '''INSERT INTO Дисциплины (Код_дисциплины, Наименование_дисциплины, Специальность,
+                    Лекции, Практические, Лабораторные, Форма_отчетности)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)'''
+            data = (code, name, speciality, lectures, practical, lab, report_form)
 
-    #cur.execute("UPDATE services SET notary_type = ? WHERE surname_klient = ? AND name_klient = ? AND lastname_klient = ?",("Продажа дачного участка", "Федорова", "Мария", "Олеговна"))
-    #cur.execute("UPDATE services SET sum_of_transaction = ? WHERE surname_klient = ? AND name_klient = ? AND lastname_klient = ?",(3500, "Смирнова", "Анна", "Владимировна"))
-    #cur.execute("UPDATE services SET dohod = ? + 500 WHERE notary_type = ?",(1300, "Продажа коммерческой недвижимости"))
+            cur.execute(sql, data)
+            con.commit()
+            print(f"Дисциплина '{name}' успешно добавлена.")
+
+    except sq.Error as e:
+        print(f"Ошибка при добавлении дисциплины: {e}")
+def view_all_disciplines(db_name="educational_plan.db"):
+    try:
+        with sq.connect(db_name) as con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM Дисциплины")
+            rows = cur.fetchall()
+            if not rows:
+                print("Таблица 'Дисциплины' пуста.")
+                return
+
+            print("Список дисциплин:")
+            for row in rows:
+                print(row)
+    except sq.Error as e:
+        print(f"Ошибка при чтении данных: {e}")
+def main():
+    db_name = "educational_plan.db"
+    create_database(db_name)
+
+    while True:
+        print("\nМеню:")
+        print("1. Добавить дисциплину")
+        print("2. Посмотреть все дисциплины")
+        print("3. Выйти")
+
+        choice = input("Выберите действие: ")
+
+        if choice == "1":
+            try:
+                code = int(input("Код дисциплины: "))
+                name = input("Наименование дисциплины: ")
+                speciality = input("Специальность: ")
+                lectures = int(input("Лекции (колич.часов): "))
+                practical = int(input("Практические (колич.часов): "))
+                lab = int(input("Лабораторные (колич.часов): "))
+                report_form = input("Форма отчетности: ")
+
+                add_discipline(db_name, code, name, speciality, lectures, practical, lab, report_form)
+            except ValueError:
+                print("Ошибка: Некорректный ввод числовых данных.")
+        elif choice == "2":
+            view_all_disciplines(db_name)
+        elif choice == "3":
+            print("Выход из приложения.")
+            break
+        else:
+            print("Некорректный выбор. Попробуйте еще раз.")
+
+
+if __name__ == "__main__":
+    main()

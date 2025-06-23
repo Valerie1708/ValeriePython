@@ -1,11 +1,14 @@
-# 1.В последовательности на n целых элементов в первой ее половине найти
-# количество положительных элементов.
-def find_positive_num(numbers):
-    half_length = len(numbers) // 2
-    first_half = numbers[:half_length]
-    num_count = len([num for num in first_half if num>=0])
-    return num_count
+#1.Даны 	две 	последовательности.
+# Найти 	элементы, 	общие 	для 	двух последовательностей и их количество.
+def find_common_elements(seq1, seq2):
+    set1 = set(seq1)
+    set2 = set(seq2)
+    common_elements = list(set1.intersection(set2))
+    return common_elements, len(common_elements)
+sequence1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+sequence2 = [5, 7, 9, 11, 13, 15, 1, 1]
 
+common, count = find_common_elements(sequence1, sequence2)
 
-numbers = list(map(int, input('Введите числа через пробел: ').split()))
-print(find_positive_num(numbers))
+print("Общие элементы:", common)
+print("Количество общих элементов:", count)

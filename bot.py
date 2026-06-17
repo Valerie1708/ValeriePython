@@ -20,7 +20,6 @@ SUBSCRIBERS_FILE = "subscribers.json"
 ORG_INFO = {
     "name": "Центр цифрового образования детей «IT-куб»",
     "address": "г. Ростов-на-Дону, ул. Большая Садовая, 53",
-    "phone": "+7 (988) 570-98-98",
     "email": "it-cube61@it-cube61.ru",
     "schedule": "Пн–пт: 09:00 – 18:00, Сб: 09:00 – 15:00",
     "director": "Буланов Дмитрий Павлович",
@@ -276,7 +275,6 @@ async def contacts(callback: types.CallbackQuery):
         f"📍 *Адрес:* {ORG_INFO['address']}\n"
         f"📅 *Режим работы:* {ORG_INFO['schedule']}\n"
         f"📧 *Email:* `{ORG_INFO['email']}`\n"
-        f"📱 *Телефон:* `{ORG_INFO['phone']}`\n\n"
         f"👨‍🏫 *Руководитель:* {ORG_INFO['director']}\n\n"
         "🔗 *Сайт:* it-cube61.ru"
     )

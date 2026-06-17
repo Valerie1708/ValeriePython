@@ -20,10 +20,9 @@ SUBSCRIBERS_FILE = "subscribers.json"
 ORG_INFO = {
     "name": "Центр цифрового образования детей «IT-куб»",
     "address": "г. Ростов-на-Дону, ул. Большая Садовая, 53",
-    "phone": "+7 (988) 570-98-98",
     "email": "it-cube61@it-cube61.ru",
     "schedule": "Пн–пт: 09:00 – 18:00, Сб: 09:00 – 15:00",
-    "director": "Софьянопуло Андрей Александрович",
+    "director": "Буланов Дмитрий Павлович",
     "about": (
         "🏛 *Центр цифрового образования «IT-куб»*\n\n"
         "Создан в 2020 году в рамках национального проекта «Образование».\n"
@@ -391,18 +390,58 @@ async def directions_list(callback: types.CallbackQuery):
     await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_directions_keyboard())
     await callback.answer()
 
+# ================== ОБРАБОТЧИКИ КНОПОК (исправленные) ==================
+
+@dp.callback_query(F.data == "about_org")
+async def about_org(callback: types.CallbackQuery):
+    text = ORG_INFO["about"]
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
+    await callback.answer()
+
+@dp.callback_query(F.data == "contacts")
+async def contacts(callback: types.CallbackQuery):
+    text = f"📞 *Контакты*\n\n📍 *Адрес:* {ORG_INFO['address']}\n📅 *Режим работы:* {ORG_INFO['schedule']}\n📧 *Email:* `{ORG_INFO['email']}`\n📱 *Телефон:* `{ORG_INFO['phone']}`\n\n👨‍🏫 *Руководитель:* {ORG_INFO['director']}\n\n🔗 *Сайт:* it-cube61.ru"
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
+    await callback.answer()
+
+@dp.callback_query(F.data == "directions_list")
+async def directions_list(callback: types.CallbackQuery):
+    text = "📚 *Направления обучения:*\n\nВыберите направление для подробной информации:"
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_directions_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
+    await callback.answer()
+
 @dp.callback_query(F.data.startswith("direction_"))
 async def direction_detail(callback: types.CallbackQuery):
     index = int(callback.data.split("_")[1])
     d = DIRECTIONS[index]
     text = f"*{d['name']}*\n\n👶 *Возраст:* {d['age']}\n\n📖 *Описание:*\n{d['description']}"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_directions_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_directions_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
 
 @dp.callback_query(F.data == "teachers_list")
 async def teachers_list(callback: types.CallbackQuery):
     text = "👨‍🏫 *Наши педагоги:*\n\nВыберите преподавателя:"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_teachers_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_teachers_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
 
 @dp.callback_query(F.data.startswith("teacher_"))
@@ -410,7 +449,11 @@ async def teacher_detail(callback: types.CallbackQuery):
     index = int(callback.data.split("_")[1])
     t = TEACHERS[index]
     text = f"👨‍🏫 *{t['name']}*\n\n📌 *Должность:* {t['role']}\n\n📋 *Опыт:*\n{t['experience']}"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_teachers_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_teachers_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
 
 @dp.callback_query(F.data == "schedule_today")
@@ -419,13 +462,21 @@ async def schedule_today(callback: types.CallbackQuery):
     today_rus = {"monday": "Понедельник", "tuesday": "Вторник", "wednesday": "Среда", "thursday": "Четверг", "friday": "Пятница", "saturday": "Суббота", "sunday": "Воскресенье"}.get(today, "Сегодня")
     schedule_text = SCHEDULE.get(today, "Расписания нет")
     text = f"📅 *{today_rus}*\n\n{schedule_text}"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_schedule_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_schedule_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
 
 @dp.callback_query(F.data == "schedule_week")
 async def schedule_week(callback: types.CallbackQuery):
     text = "📆 *Выберите день недели:*"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_week_schedule_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_week_schedule_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
 
 @dp.callback_query(F.data.startswith("schedule_day_"))
@@ -435,13 +486,21 @@ async def schedule_day(callback: types.CallbackQuery):
     day_name = day_names.get(day_key, "День")
     schedule_text = SCHEDULE.get(day_key, "Расписания нет")
     text = f"📅 *{day_name}*\n\n{schedule_text}"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_week_schedule_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_week_schedule_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
 
 @dp.callback_query(F.data == "schedule_back")
 async def schedule_back(callback: types.CallbackQuery):
     text = "📅 *Расписание занятий*\n\nВыберите действие:"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_schedule_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_schedule_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
 
 @dp.callback_query(F.data == "toggle_subscribe")
@@ -460,30 +519,9 @@ async def toggle_subscribe(callback: types.CallbackQuery):
 @dp.callback_query(F.data == "back_main")
 async def back_main(callback: types.CallbackQuery):
     text = "🚀 *Главное меню*\n\nВыберите раздел:"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
+    except Exception as e:
+        if "message is not modified" not in str(e):
+            raise e
     await callback.answer()
-
-# ================== ВЕБ-СЕРВЕР ДЛЯ RENDER ==================
-async def health_check(request):
-    return web.Response(text="Бот работает!")
-
-# ================== ЗАПУСК ==================
-async def main():
-    logging.basicConfig(level=logging.INFO)
-    
-    # Запускаем веб-сервер
-    app = web.Application()
-    app.router.add_get('/', health_check)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', 10000)
-    await site.start()
-    print("✅ Веб-сервер запущен на порту 10000")
-    
-    # Запускаем бота
-    print("✅ Бот IT-куба запущен!")
-    print(f"👥 Подписчиков: {len(subscribers)}")
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())

@@ -10,8 +10,8 @@ from aiogram.enums import ParseMode
 from aiohttp import web
 
 # ================== КОНФИГУРАЦИЯ ==================
-TOKEN = "8819100517:AAF_XspXD-2TgWx47wj3ha4c_kMD2bAtwdI"  # Замените на ваш токен
-ADMIN_ID = 925270750  # Замените на ваш Telegram ID
+TOKEN = "8819100517:AAF_XspXD-2TgWx47wj3ha4c_kMD2bAtwdI"
+ADMIN_ID = 925270750
 
 # Файл для хранения подписчиков
 SUBSCRIBERS_FILE = "subscribers.json"
@@ -155,7 +155,7 @@ TEACHERS = [
     {
         "name": "Дмитрий Буланов",
         "role": "педагог направлений «Основы программирования на Java», «Мобильная разработка на языке Kotlin», «Основы программирования на языке Python»",
-        "experience": "Опыт работы 10 лет. Кандидат технических наук.",
+        "experience": "",
         "photo": None
     },
     {
@@ -375,25 +375,6 @@ async def cmd_start(message: types.Message):
 
 @dp.callback_query(F.data == "about_org")
 async def about_org(callback: types.CallbackQuery):
-    await callback.message.edit_text(ORG_INFO["about"], parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
-    await callback.answer()
-
-@dp.callback_query(F.data == "contacts")
-async def contacts(callback: types.CallbackQuery):
-    text = f"📞 *Контакты*\n\n📍 *Адрес:* {ORG_INFO['address']}\n📅 *Режим работы:* {ORG_INFO['schedule']}\n📧 *Email:* `{ORG_INFO['email']}`\n📱 *Телефон:* `{ORG_INFO['phone']}`\n\n👨‍🏫 *Руководитель:* {ORG_INFO['director']}\n\n🔗 *Сайт:* it-cube61.ru"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
-    await callback.answer()
-
-@dp.callback_query(F.data == "directions_list")
-async def directions_list(callback: types.CallbackQuery):
-    text = "📚 *Направления обучения:*\n\nВыберите направление для подробной информации:"
-    await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_directions_keyboard())
-    await callback.answer()
-
-# ================== ОБРАБОТЧИКИ КНОПОК (исправленные) ==================
-
-@dp.callback_query(F.data == "about_org")
-async def about_org(callback: types.CallbackQuery):
     text = ORG_INFO["about"]
     try:
         await callback.message.edit_text(text, parse_mode=ParseMode.MARKDOWN, reply_markup=get_main_keyboard())
@@ -525,3 +506,28 @@ async def back_main(callback: types.CallbackQuery):
         if "message is not modified" not in str(e):
             raise e
     await callback.answer()
+
+# ================== ВЕБ-СЕРВЕР ДЛЯ RENDER ==================
+async def health_check(request):
+    return web.Response(text="Бот работает!")
+
+# ================== ЗАПУСК ==================
+async def main():
+    logging.basicConfig(level=logging.INFO)
+    
+    # Запускаем веб-сервер
+    app = web.Application()
+    app.router.add_get('/', health_check)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 10000)
+    await site.start()
+    print("✅ Веб-сервер запущен на порту 10000")
+    
+    # Запускаем бота
+    print("✅ Бот IT-куба запущен!")
+    print(f"👥 Подписчиков: {len(subscribers)}")
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
